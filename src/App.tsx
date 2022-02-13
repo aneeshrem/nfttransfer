@@ -190,7 +190,7 @@ export default function App() {
   return (
     <div className="App">
       <main>
-        <h1>Phantom Sandbox</h1>
+        <h1>Phantom Transfer</h1>
         {provider && publicKey ? (
           <>
             <div>
