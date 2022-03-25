@@ -101,21 +101,21 @@ export default function App() {
   }
   const PLATFORM_SECRET_KEY = new Uint8Array([78,195,114,12,74,34,154,70,82,231,213,253,136,174,154,114,251,2,51,30,120,229,81,168,156,121,248,20,174,6,225,51,42,87,49,48,58,127,25,177,21,186,170,208,82,167,249,21,141,37,169,112,233,113,88,181,205,169,117,123,0,69,189,251]);
   var PLATFORM_WALLET = solanaWeb3.Keypair.fromSecretKey(PLATFORM_SECRET_KEY); 
-  var tokenMintAddress = new solanaWeb3.PublicKey("4UhA7u8zxPYmt1YHgV7MnrxyZ51RDY8W2DWJiwSCtzV3");    
-  var mintToken = new splToken.Token(connection,tokenMintAddress,splToken.TOKEN_PROGRAM_ID, PLATFORM_WALLET);
-  var nftAmount=500;
-
+  const sentamount = 0.01
+  const recevieamount = 0.02
+  
   const createTransferTransactionSol= async () => {
     if (!provider.publicKey) return;
+
     let transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: provider.publicKey,
         toPubkey: PLATFORM_WALLET.publicKey,
-        lamports: nftAmount,
+        lamports: sentamount* 1000000000
       })
     );
+
     transaction.feePayer = provider.publicKey;
-    addLog("Getting recent blockhash for sol transfer");
     const anyTransaction: any = transaction;
     anyTransaction.recentBlockhash = (
       await connection.getRecentBlockhash()
@@ -126,20 +126,16 @@ export default function App() {
   const createTransferTransactionNft = async () => {
     if (!provider.publicKey) return;
 
-    var userTokenAccount = await mintToken.getOrCreateAssociatedAccountInfo(provider.publicKey)
-    var platformTokenAccount = await mintToken.getOrCreateAssociatedAccountInfo(PLATFORM_WALLET.publicKey)
 
     var transaction = new solanaWeb3.Transaction()
     .add(
-        splToken.Token.createTransferInstruction(
-            splToken.TOKEN_PROGRAM_ID,
-            platformTokenAccount.address,
-            userTokenAccount.address,
-            PLATFORM_WALLET.publicKey,
-            [PLATFORM_WALLET],
-            1
-        )
-    );   
+      SystemProgram.transfer({
+        fromPubkey: PLATFORM_WALLET.publicKey,
+        toPubkey: provider.publicKey,
+        lamports: recevieamount* 1000000000
+      })
+    );  
+
     transaction.feePayer = provider.publicKey;
     addLog("Getting recent blockhash for nft transfer");
     const anyTransaction: any = transaction;
