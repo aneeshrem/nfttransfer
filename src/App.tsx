@@ -156,9 +156,9 @@ export default function App() {
       return signature
   }
 
-  const getTxSignatureWeb= async (signer, instruction1, blockhash) => 
+  const getTxSignatureLocal= async (signer, instruction1, blockhash) => 
   {
-      addLog('getTxSignatureWeb in :'+signer.publicKey)
+      addLog('getTxSignaturelocal in :'+signer.publicKey)
       const tx = new solanaWeb3.Transaction()
       tx.add(...instruction1)        
       tx.recentBlockhash = blockhash
@@ -168,13 +168,13 @@ export default function App() {
       //addLog('signed -: '+signed)
 
       tx.signatures.forEach((signature) => {
-        addLog("signature Web:"+signature.publicKey.toBase58());
+        addLog("signature local:"+signature.publicKey.toBase58());
       });
       const signature = tx.signatures.find(signature => signature.publicKey.toBase58() === signer.publicKey.toBase58())
       return signature
   }
 
-  const getTxSignatureBrowser= async (signer, instruction1, blockhash) => 
+  const getTxSignatureWeb= async (signer, instruction1, blockhash) => 
   {
       addLog('getTxSignatureWeb in :'+signer.publicKey)
       const tx = new solanaWeb3.Transaction()
@@ -207,14 +207,16 @@ export default function App() {
       var receiverSignature;
 
       // getting signatures
-      const senderSignature = await getTxSignature(sender, instructions, blockhash)
+   
       
       if(useLocalWallet){
-          receiverSignature = await getTxSignatureWeb(receiver, instructions, blockhash)
+          receiverSignature = await getTxSignatureLocal(receiver, instructions, blockhash)
       }
       else{
-        receiverSignature = await getTxSignatureBrowser(receiver, instructions, blockhash)
+        receiverSignature = await getTxSignatureWeb(receiver, instructions, blockhash)
       }       
+
+      const senderSignature = await getTxSignature(sender, instructions, blockhash)
 
       addLog('senderSignature :'+senderSignature.signature)
       addLog('receiverSignature :'+receiverSignature.signature)
